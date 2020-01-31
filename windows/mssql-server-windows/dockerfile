@@ -1,8 +1,9 @@
-FROM microsoft/windowsservercore
+ARG OSVersion
+FROM mcr.microsoft.com/windows/servercore:${OSVersion}
 
 LABEL maintainer "Perry Skountrianos"
 
-# SQL Server 2016 vNext:
+# SQL Server 2017:
 ENV exe "https://go.microsoft.com/fwlink/?linkid=835677"
 ENV box "https://go.microsoft.com/fwlink/?linkid=835679"
 
