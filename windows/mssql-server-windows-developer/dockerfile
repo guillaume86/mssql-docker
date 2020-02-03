@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2019
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2016
 
 LABEL maintainer "Perry Skountrianos"
 
@@ -27,6 +27,12 @@ RUN stop-service MSSQLSERVER ; \
         set-itemproperty -path 'HKLM:\software\microsoft\microsoft sql server\mssql14.MSSQLSERVER\mssqlserver\supersocketnetlib\tcp\ipall' -name tcpdynamicports -value '' ; \
         set-itemproperty -path 'HKLM:\software\microsoft\microsoft sql server\mssql14.MSSQLSERVER\mssqlserver\supersocketnetlib\tcp\ipall' -name tcpport -value 1433 ; \
         set-itemproperty -path 'HKLM:\software\microsoft\microsoft sql server\mssql14.MSSQLSERVER\mssqlserver\' -name LoginMode -value 2 ;
+
+# install CU18
+RUN Invoke-WebRequest -Uri "https://download.microsoft.com/download/C/4/F/C4F908C9-98ED-4E5F-88D5-7D6A5004AEBD/SQLServer2017-KB4527377-x64.exe" -OutFile CU.exe ; \
+        Start-Process -Wait -FilePath .\CU.exe -ArgumentList /q, /x:setup ; \
+        .\setup\setup.exe /q /ACTION=Patch /ALLINSTANCES /IACCEPTSQLSERVERLICENSETERMS ; \
+        Remove-Item -Recurse -Force CU.exe, setup
 
 HEALTHCHECK CMD [ "sqlcmd", "-Q", "select 1" ]
 
